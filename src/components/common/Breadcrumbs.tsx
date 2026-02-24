@@ -1,8 +1,9 @@
-import { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 
 interface BreadcrumbItem {
   label: string
   href?: string
+  to?: string
 }
 
 interface BreadcrumbsProps {
@@ -15,7 +16,11 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       {items.map((item, index) => (
         <div key={index} className="flex items-center">
           {index > 0 && <span className="mx-2">/</span>}
-          {item.href ? (
+          {item.to ? (
+            <Link to={item.to} className="hover:text-purple-600 hover:underline">
+              {item.label}
+            </Link>
+          ) : item.href ? (
             <a href={item.href} className="hover:text-purple-600 hover:underline">
               {item.label}
             </a>

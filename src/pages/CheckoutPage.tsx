@@ -5,13 +5,16 @@ import { useCartStore } from '../store/cartStore'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { Mail, Phone, MapPin } from 'lucide-react'
+import { orderService } from '../services/orderService'
+import { paymentService } from '../services/paymentService'
+import { emailService } from '../services/emailService'
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
-  const { isAuthenticated, user } = useAuthStore()
+  const { user } = useAuthStore()
   const { cart, clearCart } = useCartStore()
   const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState(1)
+  const step = 3
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -42,17 +45,67 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
-      // Simulate order creation
+      // Build order payload
       const orderNumber = `ORD-${Date.now()}`
+      const items = cart.items.map((it) => ({
+        product_id: it.product?.id,
+        variant_id: null,
+        price: it.product?.discount_price || it.product?.price || 0,
+        quantity: it.quantity,
+      }))
 
-      // Show success
-      alert(`Order placed! Order number: ${orderNumber}`)
+      const orderPayload: any = {
+        user_id: user?.id || null,
+        order_number: orderNumber,
+        email: formData.email,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        phone: formData.phone,
+        shipping_address: `${formData.streetAddress}, ${formData.city}, ${formData.state}, ${formData.country}`,
+        subtotal: subTotal,
+        tax,
+        shipping_fee: shippingFee,
+        total,
+        payment_method: formData.paymentMethod,
+        payment_status: 'pending',
+        status: 'pending',
+        items,
+      }
 
-      // Clear cart
+      // Create order record in DB
+      const created = await orderService.createOrder(orderPayload)
+
+      // Initialize payment based on selected provider
+      if (formData.paymentMethod === 'paystack') {
+        await paymentService.initializePaystack({
+          email: formData.email,
+          amount: Math.round(total),
+          reference: orderNumber,
+        })
+        // For demo, mark completed immediately
+        await orderService.updatePaymentStatus(created.id, 'completed')
+      } else if (formData.paymentMethod === 'stripe') {
+        await paymentService.initializeStripe({ paymentMethodId: null, amount: Math.round(total) })
+        await orderService.updatePaymentStatus(created.id, 'completed')
+      } else if (formData.paymentMethod === 'flutterwave') {
+        await paymentService.initializeFlutterwave({ email: formData.email, amount: Math.round(total) })
+        await orderService.updatePaymentStatus(created.id, 'completed')
+      }
+
+      // Send confirmation email (enqueue) - best-effort
+      try {
+        await emailService.sendOrderConfirmation({
+          order_number: created.order_number || orderNumber,
+          email: created.email || formData.email,
+          total: created.total || total,
+        })
+      } catch (e) {
+        console.warn('Failed to enqueue email', e)
+      }
+
+      // Clear cart and redirect to confirmation
       clearCart()
-
-      // Redirect to success page
-      navigate(`/order-confirmation/${orderNumber}`)
+      navigate(`/order-confirmation/${created.id}`)
     } catch (error) {
       console.error('Error placing order:', error)
       alert('Failed to place order. Please try again.')

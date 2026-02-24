@@ -1,7 +1,7 @@
 import Layout from '../components/layout/Layout'
 import Button from '../components/common/Button'
 import Breadcrumbs from '../components/common/Breadcrumbs'
-import { Mail, Phone, MapPin, Clock } from 'lucide-react'
+import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function ContactPage() {
   return (

@@ -90,7 +90,7 @@ export const reviewService = {
   },
 
   // Update product rating
-  private async updateProductRating(productId: string) {
+  async updateProductRating(productId: string) {
     const { data: reviews, error: reviewError } = await supabase
       .from('reviews')
       .select('rating')

@@ -1,5 +1,4 @@
 import { supabase } from '../config/supabase'
-import { Wishlist } from '../types'
 
 export const wishlistService = {
   // Get user wishlist

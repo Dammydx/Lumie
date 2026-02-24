@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronDown, Filter } from 'lucide-react'
+import { Filter } from 'lucide-react'
 import Layout from '../components/layout/Layout'
 import Breadcrumbs from '../components/common/Breadcrumbs'
 import ProductGrid from '../components/products/ProductGrid'
@@ -91,7 +91,7 @@ export default function ShopPage() {
 
   const handleAddToWishlist = (productId: string) => {
     // Implement wishlist functionality
-    alert('Added to wishlist')
+    alert(`Added ${productId} to wishlist`)
   }
 
   return (

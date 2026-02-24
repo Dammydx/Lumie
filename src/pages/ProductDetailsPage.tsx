@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronRight, Heart, ShoppingCart, Star, Check } from 'lucide-react'
+import { Heart, ShoppingCart, Star, Check } from 'lucide-react'
 import Layout from '../components/layout/Layout'
 import Breadcrumbs from '../components/common/Breadcrumbs'
 import LoadingSkeleton from '../components/common/LoadingSkeleton'
 import Button from '../components/common/Button'
 import { productService } from '../services/productService'
 import { useCartStore } from '../store/cartStore'
-import { Product, ProductVariant } from '../types'
+import { ProductVariant } from '../types'
 
 export default function ProductDetailsPage() {
   const { id } = useParams<{ id: string }>()

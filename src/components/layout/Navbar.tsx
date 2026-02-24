@@ -8,11 +8,9 @@ import {
   Menu,
   X,
   LogOut,
-  Settings,
 } from 'lucide-react'
 import { useCartStore } from '../../store/cartStore'
 import { useAuthStore } from '../../store/authStore'
-import { authService } from '../../services/authService'
 import { productService } from '../../services/productService'
 import { Category } from '../../types'
 
@@ -24,7 +22,7 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const cartItems = useCartStore((state) => state.cart.items)
-  const { user, isAuthenticated, logout } = useAuthStore()
+  const { isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
 
   useEffect(() => {

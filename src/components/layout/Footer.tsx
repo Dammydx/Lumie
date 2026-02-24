@@ -179,6 +179,9 @@ export default function Footer() {
           <div className="flex gap-6 text-sm mt-4 md:mt-0">
             <span>🇳🇬 Nigeria (NGN)</span>
             <span>English (EN)</span>
+            <span>
+              <Link to="/admin/login" className="hover:text-white">Admin</Link>
+            </span>
           </div>
         </div>
       </div>
